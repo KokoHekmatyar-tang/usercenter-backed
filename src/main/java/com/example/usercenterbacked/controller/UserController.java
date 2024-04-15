@@ -25,7 +25,7 @@ import static com.example.usercenterbacked.constant.UserConstant.USER_LOGIN_STAT
  * Content
  */
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
     @Resource
     private UserService userService;
