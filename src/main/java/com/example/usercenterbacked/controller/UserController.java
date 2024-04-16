@@ -60,6 +60,18 @@ public class UserController {
 
     }
 
+    @GetMapping("/currentUser")
+    public User getCurrentUser(HttpServletRequest request) {
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User currentUser = (User) userObj;
+        long id = currentUser.getId();
+        if (currentUser == null) {
+            return null;
+        }
+        currentUser = userService.getById(id);
+        return currentUser;
+    }
+
     @GetMapping("/search")
     public List<User> searchUser(String username, HttpServletRequest request) {
 
