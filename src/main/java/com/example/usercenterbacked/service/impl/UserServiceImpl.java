@@ -1,4 +1,5 @@
 package com.example.usercenterbacked.service.impl;
+import java.util.Date;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -44,7 +45,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             return -1;
         }
         //账号不包含特殊字符
-        String validPattern = "/^((?!\\\\|\\/|:|\\*|\\?|<|>|\\||'|%|@|#|&|\\$|\\^|&|\\*).){1,8}$/\n";
+        String validPattern = "[A-Za-z0-9]*$";
         Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
         if (!matcher.find()) {
             return -1;
@@ -68,13 +69,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
         //插入数据
         User user = new User();
+        user.setId(0L);
+        user.setUsername("");
+        user.setAvatarUrl("");
+        user.setGender(0);
+        user.setPhone("");
+        user.setEmail("");
+        user.setUserStatus(0);
+        user.setCreateTime(new Date());
+        user.setUpdateTime(new Date());
+        user.setIsDelete(0);
+        user.setUserRole(0);
         user.setUserAccount(userAccount);
         user.setUserPassword(newPassword);
         boolean save = this.save(user);
         if (!save) {
             return -1;
         }
-        return 0;
+        return 1;
     }
 
     @Override
