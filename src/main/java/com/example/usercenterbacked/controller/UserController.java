@@ -1,6 +1,9 @@
 package com.example.usercenterbacked.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.example.usercenterbacked.common.BaseResponse;
+import com.example.usercenterbacked.common.ErrorCode;
+import com.example.usercenterbacked.common.ResultUtils;
 import com.example.usercenterbacked.model.domain.User;
 import com.example.usercenterbacked.model.domain.request.UserLoginRequest;
 import com.example.usercenterbacked.model.domain.request.UserRegisterRequest;
@@ -31,50 +34,51 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public Long userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
+    public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
         if (userRegisterRequest == null) {
-            return null;
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
         String userAccount = userRegisterRequest.getUserAccount();
         String userPassword = userRegisterRequest.getUserPassword();
         String checkPassword = userRegisterRequest.getCheckPassword();
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
-            return null;
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
         long id = userService.userRegister(userAccount, userPassword, checkPassword);
-        return id;
+        return ResultUtils.success(id);
     }
 
     @PostMapping("/userLogin")
-    public User userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+    public BaseResponse<User> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
-            return null;
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
         String userAccount = userLoginRequest.getUserAccount();
         String userPassword = userLoginRequest.getUserPassword();
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
-            return null;
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
         User user = userService.userLogin(userAccount, userPassword, request);
-        return user;
+        return ResultUtils.success(user);
 
     }
 
     @GetMapping("/currentUser")
-    public User getCurrentUser(HttpServletRequest request) {
+    public BaseResponse<User> getCurrentUser(HttpServletRequest request) {
         Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
         User currentUser = (User) userObj;
         long id = currentUser.getId();
         if (currentUser == null) {
-            return null;
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
         currentUser = userService.getById(id);
-        return currentUser;
+        User safetyUser = userService.getSafetyUser(currentUser);
+        return ResultUtils.success(safetyUser);
     }
 
     @GetMapping("/search")
     public List<User> searchUser(String username, HttpServletRequest request) {
-
+        //是否是管理者
         if (!isAdmin(request)) {
             return new ArrayList<>();
         }
@@ -97,6 +101,21 @@ public class UserController {
         }
         return userService.removeById(id);
     }
+
+    /**
+     * 注销登录
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/outLogin")
+    public BaseResponse<Integer> userLogout(HttpServletRequest request) {
+        if (request == null) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+        }
+        return ResultUtils.success(userService.userLogout(request));
+    }
+
 
     /**
      * 判断是否是管理员
