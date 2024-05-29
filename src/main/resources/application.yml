@@ -1,18 +1,20 @@
-server:
-  port: 8080
-# DataSource Config
+# 公共配置文件
 spring:
   application:
-    name: user-center
-
+    name: user-center-backend
+  # DataSource Config
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/user_center
-    username: root
-    password: admin
-    # session超时时间
+    url: jdbc:mysql://49.235.171.254:3306/user-center
+    username: user-center
+    password: tdc0901
+  # session 失效时间
   session:
     timeout: 86400
+server:
+  port: 8080
+  servlet:
+    context-path: /api
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false

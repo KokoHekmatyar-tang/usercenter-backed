@@ -1,0 +1,14 @@
+# 线上配置文件
+spring:
+  # DataSource Config
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://49.235.171.254:3306/user-center
+    username: user-center
+    password: tdc0901
+  # session 失效时间
+  session:
+    timeout: 86400
+server:
+  address: 0.0.0.0
+
